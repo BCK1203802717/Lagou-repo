@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lagou.dao.MenuMapper">
+
+    <resultMap id="menuMap" type="com.lagou.domain.Menu">
+        <id property="id" column="id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="href" column="href"/>
+        <result property="icon" column="icon"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="orderNum" column="order_num"/>
+        <result property="shown" column="shown"/>
+        <result property="level" column="level"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="createdBy" column="created_by"/>
+        <result property="updateBy" column="update_by"/>
+        <collection property="subMenuList" select="findSubMenuListByPid" column="id" ofType="com.lagou.domain.Menu">
+
+        </collection>
+    </resultMap>
+
+    <!--查询父子菜单信息-->
+    <select id="findSubMenuListByPid" parameterType="int" resultMap="menuMap">
+            SELECT * FROM menu WHERE parent_id=#{parentId}
+    </select>
+
+    <select id="findMenuByRoleId" parameterType="int" resultType="string">
+        SELECT m.id FROM menu m
+        INNER JOIN role_menu_relation rm ON m.id=rm.menu_id
+        INNER JOIN roles r ON rm.role_id=r.id  WHERE r.id=#{id}
+    </select>
+
+    <select id="findAllMenu" resultType="com.lagou.domain.Menu">
+        SELECT * FROM menu
+    </select>
+
+    <!--菜单信息（回显）-->
+    <select id="findMenuInfoById" parameterType="int" resultMap="MenuResult">
+        SELECT * FROM menu WHERE parent_id=#{pid}
+    </select>
+    <resultMap id="MenuResult" type="com.lagou.domain.Menu">
+        <id property="id" column="id"></id>
+        <result property="href" column="href"></result>
+        <result property="icon" column="icon"></result>
+        <result property="name" column="name"></result>
+        <result property="description" column="description"></result>
+        <result property="orderNum" column="order_num"></result>
+        <result property="shown" column="shown"></result>
+        <result property="level" column="level"></result>
+        <result property="createdTime" column="created_time"></result>
+        <result property="updatedTime" column="updated_time"></result>
+        <result property="createdBy" column="created_by"></result>
+        <result property="updatedBy" column="updated_by"></result>
+        <collection property="subMenuList" ofType="com.lagou.domain.Menu" select="findMenuInfoById"
+                    column="id"></collection>
+    </resultMap>
+
+    <!--查询菜单信息-->
+    <select id="findMenuById" resultType="com.lagou.domain.Menu" parameterType="int">
+        SELECT * FROM menu WHERE id=#{id}
+    </select>
+
+    <!--添加菜单信息-->
+    <insert id="saveMenu" parameterType="com.lagou.domain.Menu">
+        INSERT INTO menu
+        (
+         name,
+         href,
+         parent_id,
+         description,
+         icon,
+         shown,
+         order_num,
+         level,
+         created_time,
+         updated_time,
+         created_by,
+         updated_by
+        )
+        VALUES
+        (
+         #{name},
+         #{href},
+         #{parentId},
+         #{description},
+         #{icon},
+         #{shown},
+         #{orderNum},
+         #{level},
+         #{createdTime},
+         #{updatedTime},
+         #{createdBy},
+         #{createdBy}
+        )
+    </insert>
+
+    <update id="updateMenu" parameterType="com.lagou.domain.Menu">
+        UPDATE menu
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name!=null and name!=''">
+                name=#{name},
+            </if>
+            <if test="href!=null and href!=''">
+                href=#{href},
+            </if>
+            <if test="parentId!=null and parentId!=''">
+                parent_id=#{parentId},
+            </if>
+            <if test="description!=null and description!=''">
+                description=#{description},
+            </if>
+            <if test="icon!=null and icon !=''">
+                icon=#{icon},
+            </if>
+            <if test="shown!=null and shown!=''">
+                shown=#{shown},
+            </if>
+            <if test="orderNum!=null and orderNum!=''">
+                order_num=#{orderNum},
+            </if>
+            <if test="level!=null and level!=''">
+                level=#{level},
+            </if>
+            <if test="createdTime!=null">
+                created_time=#{createdTime},
+            </if>
+            <if test="updatedTime!=null">
+                updated_time=#{updatedTime},
+            </if>
+            <if test="createdBy!=null">
+                created_by=#{createdBy},
+            </if>
+            <if test="updatedBy!=null">
+                updated_by=#{updatedBy}
+            </if>
+        </trim>
+        <where>
+            <if test="id!=null and id!=''">
+                id=#{id}
+            </if>
+        </where>
+    </update>
+</mapper>

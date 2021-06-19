@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lagou.dao.ResourceMapper">
+    <!--条件查询-->
+    <select id="findAllResource" resultType="com.lagou.domain.Resource" parameterType="com.lagou.domain.ResourceVO">
+        SELECT * FROM resource
+        <where>
+            <if test="name!=null and name!=''">
+                AND name=#{name}
+            </if>
+            <if test="categoryId!=null and categoryId!=''">
+                AND category_id=#{categoryId}
+            </if>
+            <if test="url!=null and url!=''">
+                AND url=#{url}
+            </if>
+        </where>
+    </select>
+
+    <!--添加资源-->
+    <insert id="saveResource" parameterType="com.lagou.domain.Resource">
+        INSERT INTO resource
+            (
+                name,
+                url,
+                category_id,
+                description,
+                created_time,
+                updated_time,
+                created_by,
+                updated_by
+            )
+        VALUES
+            (
+                #{name},
+                #{url},
+                #{categoryId},
+                #{description},
+                #{createdTime},
+                #{updatedTime},
+                #{createdBy},
+                #{updatedBy}
+            )
+    </insert>
+    <!--更新资源-->
+    <update id="updateResource" parameterType="com.lagou.domain.Resource">
+        UPDATE resource
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name!=null and name!=''">
+                name=#{name},
+            </if>
+            <if test="url!=null and url!=''">
+                url=#{url},
+            </if>
+            <if test="categoryId!=null and categoryId!=''">
+                category_id=#{categoryId},
+            </if>
+            <if test="description!=null and description!=''">
+                description=#{description},
+            </if>
+            <if test="updatedTime!=null">
+                updated_time=#{updatedTime},
+            </if>
+            <if test="updatedBy!=null and updatedBy!=''">
+                updated_by=#{updatedBy}
+            </if>
+        </trim>
+        <where>
+            <if test="id!=null and id!=''">
+                id=#{id}
+            </if>
+        </where>
+    </update>
+    <!--删除资源-->
+    <delete id="deleteResource" parameterType="int">
+        DELETE FROM resource WHERE id=#{id}
+    </delete>
+</mapper>
